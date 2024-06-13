@@ -3,7 +3,7 @@ import { Router } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { authMiddleware } from "../middleware/authentication";
-import { UsersRepository } from "../repositories/users_respository";
+import { UsersRepository } from "../repositories/users_repository";
 
 // /users/...
 export const buildUsersController = (usersRepository: UsersRepository) => {

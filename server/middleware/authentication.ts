@@ -2,7 +2,7 @@ import { PrismaClient, User } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { Middleware, } from "./middleware";
 import { JwtPayload } from "../utils/jwt";
-import { UsersRepository } from "../repositories/users_respository";
+import { UsersRepository } from "../repositories/users_repository";
 
 export const authMiddleware: Middleware = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1]

@@ -22,12 +22,13 @@ model User {
   password_hash String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  profileId     Int      @unique
 }
 
 model Department {
   id                 Int              @id @default(autoincrement())
   name               String
+  abbreviation       String?
+  departmentCode     String?
   extension          Int?
   email              String?
   subDepartments     Department[]     @relation("subdeparments")
