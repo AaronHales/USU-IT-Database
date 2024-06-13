@@ -20,17 +20,93 @@ model User {
   lastName      String
   email         String   @unique
   password_hash String
-  profile       Profile  @relation(fields: [profileId], references: [id])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   profileId     Int      @unique
 }
 
-model Profile {
-  id              Int      @id @default(autoincrement())
-  age             Int?
-  profileImageUrl String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User?
+model Department {
+  id                 Int              @id @default(autoincrement())
+  name               String
+  extension          Int?
+  email              String?
+  subDepartments     Department[]     @relation("subdeparments")
+  parentDepartment   Department?      @relation("subdeparments", fields: [parentDepartmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  parentDepartmentId Int?
+  responsibilities   Responsibility[]
+  techs              DesktopSupport[]
+  commonIssues       CommonIssue[]
+  software           Software[]
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+}
+
+model Responsibility {
+  id             Int        @id @default(autoincrement())
+  responsibility String
+  department     Department @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  departmentId   Int
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model DesktopSupport {
+  id            Int          @id @default(autoincrement())
+  name          String
+  deskPhone     Int?
+  cellPhone     Int?
+  email         String?
+  commonIssue   CommonIssue? @relation("issues", fields: [commonIssueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  commonIssueId Int?
+  software      Software?    @relation(fields: [softwareId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  softwareId    Int?
+  department    Department   @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  departmentId  Int
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model CommonIssue {
+  id           Int              @id @default(autoincrement())
+  problem      String?
+  helpers      DesktopSupport[] @relation("issues")
+  solution     String?
+  resources    Resource[]
+  department   Department       @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  departmentId Int
+  software     Software?        @relation(fields: [softwareId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  softwareId   Int?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model Resource {
+  id            Int          @id @default(autoincrement())
+  incidents     Incident[]
+  link          String?
+  commonIssue   CommonIssue? @relation(fields: [commonIssueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  commonIssueId Int?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Incident {
+  id         Int       @id @default(autoincrement())
+  number     String
+  link       String
+  resource   Resource? @relation(fields: [resourceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  resourceId Int?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Software {
+  id           Int              @id @default(autoincrement())
+  name         String
+  support      DesktopSupport[]
+  commonIssues CommonIssue[]
+  department   Department       @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  departmentId Int
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 }
