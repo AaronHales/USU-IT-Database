@@ -36,8 +36,8 @@ model Department {
   parentDepartmentId Int?
   responsibilities   Responsibility[]
   techs              DesktopSupport[]
-  commonIssues       CommonIssue[]
-  software           Software[]
+  commonIssues       CommonIssue[]    @relation("departmentIssues")
+  software           Software[]       @relation("software-department")
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 }
@@ -57,12 +57,9 @@ model DesktopSupport {
   deskPhone     Int?
   cellPhone     Int?
   email         String?
-  commonIssue   CommonIssue? @relation("issues", fields: [commonIssueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  commonIssueId Int?
-  software      Software?    @relation(fields: [softwareId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  softwareId    Int?
-  department    Department   @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  departmentId  Int
+  commonIssue   CommonIssue[] @relation("issues")
+  software      Software[]
+  department    Department[]
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 }
@@ -73,7 +70,7 @@ model CommonIssue {
   helpers      DesktopSupport[] @relation("issues")
   solution     String?
   resources    Resource[]
-  department   Department       @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  departments   Department[]    @relation("departmentIssues")
   departmentId Int
   software     Software?        @relation(fields: [softwareId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   softwareId   Int?
@@ -106,8 +103,7 @@ model Software {
   name         String
   support      DesktopSupport[]
   commonIssues CommonIssue[]
-  department   Department       @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  departmentId Int
+  department   Department[]     @relation("software-department")
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 }
