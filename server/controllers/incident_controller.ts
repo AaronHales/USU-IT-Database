@@ -16,8 +16,7 @@ export const buildIncidentController = (incidentRepository: IncidentsRepository)
   });
 
   router.get("/:id", authMiddleware, async (req, res) => {
-    req.body.id = +req.params.id
-    const incident = await incidentRepository.getIncidentById(req.body);
+    const incident = await incidentRepository.getIncidentById(+req.params.id);
 
     res.json({ incident: incident });
   })
@@ -27,6 +26,12 @@ export const buildIncidentController = (incidentRepository: IncidentsRepository)
     const incident = await incidentRepository.updateIncident(req.body);
 
     res.json({ incident: incident });
+  })
+
+  router.delete("/:id", authMiddleware, async (req, res) => {
+    const incident = await incidentRepository.deleteIncidentById(+req.params.id)
+
+    res.json({ incident: incident});
   })
   
 

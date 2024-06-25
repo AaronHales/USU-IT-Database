@@ -72,6 +72,14 @@ export class IncidentsRepository {
     })
   }
 
+  async deleteIncidentById(id: number) {
+    return this.db.incident.delete({
+      where: {
+        id: id,
+      }
+    })
+  }
+
   async getIncidentById(id: number) {
     return this.db.incident.findUnique({
       where: {
