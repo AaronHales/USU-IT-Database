@@ -10,18 +10,32 @@ import jwt from "jsonwebtoken";
 import { buildUsersController } from "./server/controllers/users_controller";
 import { buildSessionsController } from "./server/controllers/sessions_controller";
 import { buildHomeController } from "./server/controllers/home_controller";
-import { buildSoftwareController } from "./server/controllers/software_controller";
 import { UsersRepository } from "./server/repositories/users_repository";
+
+import { buildSoftwareController } from "./server/controllers/software_controller";
 import { SoftwareRepository } from "./server/repositories/software_repository";
-import { buildCommonIssueController } from "./server/controllers/commonIssue_controller";
-import { CommonIssueRepository } from "./server/repositories/commonIssue_repository";
+
+import { buildCommonIssuesController } from "./server/controllers/commonIssues_controller";
+import { CommonIssuesRepository} from "./server/repositories/commonIssues_repository";
+
+import { buildIncidentsController } from "./server/controllers/incidents_controller";
+import { IncidentsRepository } from "./server/repositories/incidents_repository";
+
+import { buildResourcesController } from "./server/controllers/resources_controller";
+import { ResourcesRepository } from "./server/repositories/resources_repository";
+
+import { buildResponsibilitiesController } from "./server/controllers/responsibilities_controller";
+import { ResponsibilitiesRepository } from "./server/repositories/responsibilities_repositiory";
 
 
 
 const db = new PrismaClient();
 const usersRepository = UsersRepository.getInstance(db);
 const softwareRepository = SoftwareRepository.getInstance(db);
-const commonIssueRepository = CommonIssueRepository.getInstance(db);
+const commonIssuesRepository = CommonIssuesRepository.getInstance(db);
+const incidentsRepository = IncidentsRepository.getInstance(db);
+const resourcesRepository = ResourcesRepository.getInstance(db);
+const responsibilitiesRepository = ResponsibilitiesRepository.getInstance(db);
 
 dotenv.config();
 
@@ -56,7 +70,11 @@ app.use("/", buildHomeController());
 app.use("/users", buildUsersController(usersRepository));
 app.use("/sessions", buildSessionsController(db));
 app.use("/software", buildSoftwareController(softwareRepository));
-app.use("/commonIssues", buildCommonIssueController(commonIssueRepository))
+app.use("/commonIssues", buildCommonIssuesController(commonIssuesRepository));
+app.use("/incidents", buildIncidentsController(incidentsRepository));
+app.use("/resources", buildResourcesController(resourcesRepository));
+app.use("/responsibilities", buildResponsibilitiesController(responsibilitiesRepository));
+
 
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}...`);

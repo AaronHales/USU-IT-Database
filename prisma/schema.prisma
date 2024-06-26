@@ -45,8 +45,8 @@ model Department {
 model Responsibility {
   id             Int        @id @default(autoincrement())
   responsibility String
-  department     Department @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  departmentId   Int
+  department     Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  departmentId   Int?
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 }
@@ -79,6 +79,7 @@ model CommonIssue {
 
 model Resource {
   id            Int          @id @default(autoincrement())
+  description   String
   incidents     Incident[]
   link          String?
   commonIssue   CommonIssue? @relation(fields: [commonIssueId], references: [id], onDelete: Cascade, onUpdate: Cascade)

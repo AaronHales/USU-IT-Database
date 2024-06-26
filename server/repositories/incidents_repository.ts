@@ -8,17 +8,22 @@ export type CreateIncidentPayload = {
 }
 
 export type UpdateAllOfIncidentPayload = {
-    id: number,
-    number: string,
-    link: string,
-    resourceId: number|undefined,
+  id: number,
+  number: string,
+  link: string,
+  resourceId: number|undefined,
 }
 
 export type UpdateSomeOfIncidentPayload = {
-    id: number,
-    number: string|undefined,
-    link: string|undefined,
-    resourceId: number|undefined,
+  id: number,
+  number: string|undefined,
+  link: string|undefined,
+  resourceId: number|undefined,
+}
+
+export type AddOrRemoveResourcePayload = {
+  id: number,
+  resourceId: number|undefined,
 }
 
 export class IncidentsRepository {
@@ -48,27 +53,38 @@ export class IncidentsRepository {
 
   async updateIncident({id, number, link, resourceId}: UpdateAllOfIncidentPayload) {
     return this.db.incident.update({
-        where: {
-            id: id,
-        },
-        data: {
-            number: number,
-            link: link,
-            resourceId: resourceId,
-        }
+      where: {
+        id: id,
+      },
+      data: {
+        number: number,
+        link: link,
+        resourceId: resourceId,
+      }
     })
   }
 
   async patchIncident({id, number, link, resourceId: resourceId}: UpdateSomeOfIncidentPayload) {
     return this.db.incident.update({
-        where: {
-            id: id,
-        },
-        data: {
-            number: number,
-            link: link,
-            resourceId: resourceId,
-        }
+      where: {
+        id: id,
+      },
+      data: {
+        number: number,
+        link: link,
+        resourceId: resourceId,
+      }
+    })
+  }
+
+  async addOrRemoveResource({id, resourceId} : AddOrRemoveResourcePayload) {
+    return this.db.incident.update({
+      where: {
+        id: id,
+      },
+      data: {
+        resourceId: resourceId,
+      }
     })
   }
 

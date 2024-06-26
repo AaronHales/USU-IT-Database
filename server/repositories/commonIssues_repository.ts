@@ -33,16 +33,16 @@ export type AddOrRemoveHelperPayload = {
   techId: number,
 }
 
-export class CommonIssueRepository {
+export class CommonIssuesRepository {
   private db: PrismaClient
-  private static instance: CommonIssueRepository
+  private static instance: CommonIssuesRepository
   constructor(db: PrismaClient) {
     this.db = db;
   }
 
-  static getInstance(db?: PrismaClient): CommonIssueRepository {
+  static getInstance(db?: PrismaClient): CommonIssuesRepository {
     if (!this.instance) {
-      this.instance = new CommonIssueRepository(db!!);
+      this.instance = new CommonIssuesRepository(db!!);
     }
     return this.instance;
   }

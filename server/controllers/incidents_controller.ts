@@ -1,12 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
 import { authMiddleware } from "../middleware/authentication";
-import { IncidentsRepository } from "../repositories/incident_repository";
+import { IncidentsRepository } from "../repositories/incidents_repository";
 
 // /incidents/...
-export const buildIncidentController = (incidentRepository: IncidentsRepository) => {
+export const buildIncidentsController = (incidentRepository: IncidentsRepository) => {
   const router = Router();
 
   router.post("/", authMiddleware, async (req, res) => {
@@ -23,7 +21,11 @@ export const buildIncidentController = (incidentRepository: IncidentsRepository)
 
   router.put("/:id", authMiddleware, async (req, res) => {
     req.body.id = +req.params.id
-    const incident = await incidentRepository.updateIncident(req.body);
+    let incident
+    if (req.body.addOrRemoveResource) {
+      incident = await incidentRepository.addOrRemoveResource(req.body);
+    }
+    incident = await incidentRepository.updateIncident(req.body);
 
     res.json({ incident: incident });
   })
