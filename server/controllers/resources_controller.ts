@@ -24,9 +24,20 @@ export const buildResourcesController = (resourcesRepository: ResourcesRepositor
     res.json({ resource: resource});
   })
 
-  router.delete("/:id", authMiddleware, async (req, res) => {
+  router.patch("/:id", authMiddleware, async (req, res) => {
     req.body.id = +req.params.id
-    const resource = await resourcesRepository.deleteResource(req.body)
+    let resource
+    if (req.body.removeForeignKeys) {
+      resource = await resourcesRepository.removeForeignKeys(req.body)
+    }
+    else if (req.body.addForeignKeys) {
+        resource = await resourcesRepository.addForeignKeys(req.body)
+    }
+    res.json({ resource: resource})
+  })
+
+  router.delete("/:id", authMiddleware, async (req, res) => {
+    const resource = await resourcesRepository.deleteResource(+req.params.id)
     res.json({ resource: resource});
   })
 

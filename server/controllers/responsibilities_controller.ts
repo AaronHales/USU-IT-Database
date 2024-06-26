@@ -25,8 +25,7 @@ export const buildResponsibilitiesController = (responsibilitiesRepository: Resp
   })
 
   router.delete("/:id", authMiddleware, async (req, res) => {
-    req.body.id = +req.params.id
-    const responsibility = await responsibilitiesRepository.deleteResponsibility(req.body)
+    const responsibility = await responsibilitiesRepository.deleteResponsibility(+req.params.id)
     res.json({ responsibility: responsibility});
   })
 

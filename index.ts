@@ -30,7 +30,11 @@ import { ResponsibilitiesRepository } from "./server/repositories/responsibiliti
 import { buildDesktopSupportsController } from "./server/controllers/desktopSupports_controller";
 import { DesktopSupportsRepository } from "./server/repositories/desktopSupports_repository";
 
+import { buildDepartmentsController } from "./server/controllers/departments_controller";
+import { DepartmentsRepository } from "./server/repositories/departments_repository";
 
+import { buildExtensionsController } from "./server/controllers/extensions_controller";
+import { ExtensionsRepository } from "./server/repositories/extensions_repository";
 
 const db = new PrismaClient();
 const usersRepository = UsersRepository.getInstance(db);
@@ -40,6 +44,8 @@ const incidentsRepository = IncidentsRepository.getInstance(db);
 const resourcesRepository = ResourcesRepository.getInstance(db);
 const responsibilitiesRepository = ResponsibilitiesRepository.getInstance(db);
 const desktopSupportsRepository = DesktopSupportsRepository.getInstance(db);
+const departmentsRepository = DepartmentsRepository.getInstance(db);
+const extensionsRepository = ExtensionsRepository.getInstance(db);
 
 dotenv.config();
 
@@ -79,6 +85,8 @@ app.use("/incidents", buildIncidentsController(incidentsRepository));
 app.use("/resources", buildResourcesController(resourcesRepository));
 app.use("/responsibilities", buildResponsibilitiesController(responsibilitiesRepository));
 app.use("/desktopSupport", buildDesktopSupportsController(desktopSupportsRepository));
+app.use("/departmets", buildDepartmentsController(departmentsRepository));
+app.use("/extensions", buildExtensionsController(extensionsRepository));
 
 
 app.listen(process.env.PORT || 3000, () => {

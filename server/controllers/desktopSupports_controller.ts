@@ -20,6 +20,12 @@ export const buildDesktopSupportsController = (desktopSupportsRepository: Deskto
 
   router.put("/:id", authMiddleware, async (req, res) => {
     req.body.id = +req.params.id
+    const desktopSupport = await desktopSupportsRepository.updateDesktopSupport(req.body)
+    res.json({ desktopSupport: desktopSupport})
+  })
+
+  router.patch("/:id", authMiddleware, async (req, res) => {
+    req.body.id = +req.params.id
     let desktopSupport
     if (req.body.removeForeignKeys) {
         desktopSupport = await desktopSupportsRepository.removeForeignKeys(req.body)
@@ -28,13 +34,11 @@ export const buildDesktopSupportsController = (desktopSupportsRepository: Deskto
         desktopSupport = await desktopSupportsRepository.addForeignKeys(req.body)
     }
 
-    desktopSupport = await desktopSupportsRepository.updateDesktopSupport(req.body)
     res.json({ desktopSupport: desktopSupport})
   })
 
   router.delete("/:id", authMiddleware, async (req, res) => {
-    req.body.id = +req.params.id
-    const desktopSupport = await desktopSupportsRepository.deleteDesktopSupport(req.body)
+    const desktopSupport = await desktopSupportsRepository.deleteDesktopSupport(+req.params.id)
     res.json({ desktopSupport: desktopSupport});
   })
 

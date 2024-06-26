@@ -29,7 +29,7 @@ model Department {
   name               String
   abbreviation       String?
   departmentCode     String?
-  extension          Int?
+  phoneNumbers       Extension[]
   email              String?
   subDepartments     Department[]     @relation("subdeparments")
   parentDepartment   Department?      @relation("subdeparments", fields: [parentDepartmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -42,13 +42,22 @@ model Department {
   updatedAt          DateTime         @updatedAt
 }
 
+model Extension {
+  id           Int         @id @default(autoincrement())
+  phoneNumber  Int
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  departmentId Int?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
 model Responsibility {
-  id             Int        @id @default(autoincrement())
+  id             Int         @id @default(autoincrement())
   responsibility String
   department     Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   departmentId   Int?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 }
 
 model DesktopSupport {

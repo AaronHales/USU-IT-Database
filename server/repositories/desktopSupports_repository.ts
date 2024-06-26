@@ -28,10 +28,6 @@ export type AddOrRemoveForeignKeysPayload = {
   deptartmentIds: [number],
 }
 
-export type DeleteDesktopSupportPayload = {
-  id: number,
-}
-
 export class DesktopSupportsRepository {
   private db: PrismaClient
   private static instance: DesktopSupportsRepository
@@ -148,7 +144,7 @@ export class DesktopSupportsRepository {
     })
   }
 
-  async deleteDesktopSupport({id}: DeleteDesktopSupportPayload) {
+  async deleteDesktopSupport(id: number) {
     return this.db.desktopSupport.delete({
       where: {
         id: id

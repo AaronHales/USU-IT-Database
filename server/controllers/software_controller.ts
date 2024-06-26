@@ -19,23 +19,20 @@ export const buildSoftwareController = (softwareRepository: SoftwareRepository) 
 
   router.put("/:id", authMiddleware, async (req, res) => {
     req.body.id = +req.params.id
+    const software = await softwareRepository.updateSoftware(req.body)
+    res.json({software: software})
+  })
+
+  router.patch("/:id", authMiddleware, async (req, res) => {
+    req.body.id = +req.params.id
     let software
-    if (req.body.removeDepartment) {
-      software = await softwareRepository.removeDepartment(req.body)
+    if (req.body.removeForeignKeys) {
+      software = await softwareRepository.removeForeignKeys(req.body)
     }
-    else if (req.body.addDepartment) {
-      software = await softwareRepository.addDepartment(req.body)
+    else if (req.body.addForeignKeys) {
+      software = await softwareRepository.addForeignKeys(req.body)
     }
-    if (req.body.addSupport) {
-      software = await softwareRepository.addSupport(req.body)
-    }
-    else if (req.body.removeSupport) {
-      software = await softwareRepository.removeSupport(req.body)
-    }
-    if (req.body.addCommonIssue) {
-      software = await softwareRepository.addCommonIssue(req.body)
-    }
-    software = await softwareRepository.updateSoftware(req.body)
+    
     res.json({software: software})
   })
 

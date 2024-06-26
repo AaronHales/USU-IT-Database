@@ -11,10 +11,6 @@ export type UpdateResponsibilityPayload = {
   departmentID: number|undefined,
 }
 
-export type DeleteResponsibilityPayload = {
-  id: number,
-}
-
 export class ResponsibilitiesRepository {
   private db: PrismaClient
   private static instance: ResponsibilitiesRepository
@@ -51,7 +47,7 @@ export class ResponsibilitiesRepository {
     })
   }
 
-  async deleteResponsibility({id}: DeleteResponsibilityPayload) {
+  async deleteResponsibility(id: number) {
     return this.db.responsibility.delete({
       where: {
         id: id

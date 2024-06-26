@@ -1,36 +1,29 @@
 import { PrismaClient } from "@prisma/client";
 
 export type CreateCommonIssuePayload = {
+  problem: string|null|undefined,
+  solution: string|null|undefined,
+  departmentIds: [number],
+  techIds: [number],
+  resourceIds: [number],
+  softwareId: number|undefined,
 }
 
 export type UpdateCommonIssuePayload = {
   id: number|undefined,
   problem: string|null|undefined,
   solution: string|null|undefined,
-  department: {
-    id: number|undefined,
-    name: string,
-    abbreviation: string|undefined,
-    departmentCode: string|undefined,
-    extension: number|undefined,
-    email: string|undefined,
-    parentDepartmentId: number|undefined,
-  }
+  departmentIds: [number],
+  techIds: [number],
+  resourceIds: [number],
+  softwareId: number|undefined,
 }
 
-export type AddOrRemoveDepartmentPayload = {
+export type AddOrRemoveForeignKeysPayload = {
   id: number,
-  departmentId: number,
-}
-
-export type AddOrRemoveSoftwarePayload = {
-  id: number,
-  softwareId: number,
-}
-
-export type AddOrRemoveHelperPayload = {
-  id: number,
-  techId: number,
+  departmentIds: [number],
+  techIds: [number],
+  resourceIds: [number],
 }
 
 export class CommonIssuesRepository {
@@ -48,15 +41,26 @@ export class CommonIssuesRepository {
   }
 
 
-  async createCommonIssue({}: CreateCommonIssuePayload) {
+  async createCommonIssue({problem, solution, departmentIds, techIds, resourceIds, softwareId}: CreateCommonIssuePayload) {
     return this.db.commonIssue.create({
       data: {
-        
+        problem: problem,
+        solution: solution,
+        departments: {
+          connect: departmentIds.map(id => ({id}))
+        },
+        resources: {
+          connect: resourceIds.map(id => ({id}))
+        },
+        helpers: {
+          connect: techIds.map(id => ({id}))
+        },
+        softwareId: softwareId,
       }
     });
   }
 
-  async updateCommonIssue({id, problem, solution, department}: UpdateCommonIssuePayload) {
+  async updateCommonIssue({id, problem, solution, departmentIds, techIds, resourceIds, softwareId}: UpdateCommonIssuePayload) {
     return this.db.commonIssue.update({
       where: {
         id: id
@@ -65,94 +69,52 @@ export class CommonIssuesRepository {
         problem: problem,
         solution: solution,
         departments: {
-          connectOrCreate: {
-            where: {
-              id: department.id,
-            },
-            create: {
-              name: department.name,
-              abbreviation: department.abbreviation,
-              departmentCode: department.departmentCode,
-              extension: department.extension,
-              email: department.email,
-              parentDepartmentId: department.parentDepartmentId,
-            }
-            
-          }
-        }
+          connect: departmentIds.map(id => ({id}))
+        },
+        resources: {
+          connect: resourceIds.map(id => ({id}))
+        },
+        helpers: {
+          connect: techIds.map(id => ({id}))
+        },
+        softwareId: softwareId,
       }
     })
   }
 
-  async addDepartment({id, departmentId}: AddOrRemoveDepartmentPayload) {
+  async addForeignKeys({id, departmentIds, techIds, resourceIds}: AddOrRemoveForeignKeysPayload) {
     return this.db.commonIssue.update({
       where: {
         id: id,
       },
       data: {
         departments: {
-          connect: {id: departmentId}
+          connect: departmentIds.map(id => ({id}))
+        },
+        helpers: {
+          connect: techIds.map(id => ({id}))
+        },
+        resources: {
+          connect: resourceIds.map(id => ({id}))
         }
       }
     })
   }
 
-  async removeDepartment({id, departmentId}: AddOrRemoveDepartmentPayload) {
+  async removeForeignKeys({id, departmentIds, techIds, resourceIds}: AddOrRemoveForeignKeysPayload) {
     return this.db.commonIssue.update({
       where: {
         id: id,
       },
       data: {
         departments: {
-          disconnect: {id: departmentId}
-        }
-      }
-    })
-  }
-
-  async addSoftware({id, softwareId}: AddOrRemoveSoftwarePayload) {
-    return this.db.commonIssue.update({
-      where: {
-        id: id,
-      },
-      data: {
-        softwareId: softwareId
-      }
-    })
-  }
-
-  async removeSoftware({id, softwareId}: AddOrRemoveSoftwarePayload) {
-    return this.db.commonIssue.update({
-      where: {
-        id: id,
-      },
-      data: {
-        softwareId: null
-      }
-    })
-  }
-
-  async addHelper({id, techId}: AddOrRemoveHelperPayload) {
-    return this.db.commonIssue.update({
-      where: {
-        id: id,
-      },
-      data: {
+          disconnect: departmentIds.map(id => ({id}))
+        },
         helpers: {
-          connect: {id: techId}
-        }
-      }
-    })
-  }
-
-  async removeHelper({id, techId}: AddOrRemoveHelperPayload) {
-    return this.db.commonIssue.update({
-      where: {
-        id: id,
-      },
-      data: {
-        helpers: {
-          disconnect: {id: techId}
+          disconnect: techIds.map(id => ({id}))
+        },
+        resources: {
+          disconnect: resourceIds.map(id => ({id}))
         }
       }
     })

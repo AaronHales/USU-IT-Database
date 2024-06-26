@@ -19,28 +19,22 @@ export const buildCommonIssuesController = (commonIssuesRepository: CommonIssues
 
   router.put("/:id", authMiddleware, async (req, res) => {
     req.body.id = +req.params.id
-    let commonIssue
-    if (req.body.addSoftware) {
-      commonIssue = await commonIssuesRepository.addSoftware(req.body)
-    }
-    else if (req.body.removeSoftware) {
-      commonIssue = await commonIssuesRepository.removeSoftware(req.body)
-    }
-    if (req.body.addDepartment) {
-      commonIssue = await commonIssuesRepository.addDepartment(req.body)
-    }
-    else if (req.body.removeDepartment) {
-      commonIssue = await commonIssuesRepository.removeDepartment(req.body)
-    }
-    if (req.body.addHelper) {
-      commonIssue = await commonIssuesRepository.addHelper(req.body)
-    }
-    else if (req.body.removeHelper) {
-      commonIssue = await commonIssuesRepository.removeHelper(req.body)
-    }
-    commonIssue = await commonIssuesRepository.updateCommonIssue(req.body)
+    const commonIssue = await commonIssuesRepository.updateCommonIssue(req.body)
     res.json({commonIssue: commonIssue})
   })
+
+  router.patch("/:id", authMiddleware, async (req, res) => {
+    req.body.id = +req.params.id
+    let commonIssue
+    if (req.body.removeForeignKeys) {
+      commonIssue = await commonIssuesRepository.removeForeignKeys(req.body)
+    }
+    else if (req.body.addForeignKeys) {
+      commonIssue = await commonIssuesRepository.addForeignKeys(req.body)
+    }
+    res.json({commonIssue: commonIssue})
+  })
+
 
   router.delete("/:id", authMiddleware, async (req, res) => {
     const commonIssue = await commonIssuesRepository.deleteCommonIssue(+ req.params.id)

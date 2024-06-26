@@ -2,28 +2,24 @@ import { PrismaClient } from "@prisma/client";
 
 export type CreateSoftwarePayload = {
   name: string,
+  commonIssueIds: [number],
+  departmentIds: [number],
+  techIds: [number]
 }
 
 export type UpdateSoftwarePayload = {
   id: number,
   name: string,
+  commonIssueIds: [number],
+  departmentIds: [number],
+  techIds: [number]
 }
 
-export type AddOrRemoveDepartmentPayload = {
+export type AddOrRemoveForeignKeysPayload = {
   id: number,
-  departmentId: number,
-}
-
-export type AddOrRemoveSupportPayload = {
-  id: number,
-  techId: number,
-}
-
-export type AddCommonIssuePayload = {
-  id: number,
-  commonIssueId: number|undefined,
-  problem: string|undefined,
-  solution: string|undefined,
+  commonIssueIds: [number],
+  departmentIds: [number],
+  techIds: [number]
 }
 
 export class SoftwareRepository {
@@ -41,89 +37,97 @@ export class SoftwareRepository {
   }
 
 
-  async createSoftware({name}: CreateSoftwarePayload) {
+  async createSoftware({name, commonIssueIds, departmentIds, techIds}: CreateSoftwarePayload) {
     return this.db.software.create({
       data: {
         name: name,
+        commonIssues: {
+          connect: commonIssueIds.map(id => ({id}))
+        },
+        department: {
+          connect: departmentIds.map(id => ({id})),
+        },
+        support: {
+          connect: techIds.map(id => ({id}))
+        },
+      },
+      include: {
+        commonIssues: true,
+        department: true,
+        support: true,
       }
     });
   }
 
-  async updateSoftware({id, name}: UpdateSoftwarePayload) {
+  async updateSoftware({id, name, commonIssueIds, departmentIds, techIds}: UpdateSoftwarePayload) {
     return this.db.software.update({
       where: {
         id: id,
       },
       data: {
         name: name,
+        commonIssues: {
+          connect: commonIssueIds.map(id => ({id}))
+        },
+        department: {
+          connect: departmentIds.map(id => ({id})),
+        },
+        support: {
+          connect: techIds.map(id => ({id}))
+        },
       },
+      include: {
+        commonIssues: true,
+        department: true,
+        support: true,
+      }
     })
   }
 
-  async addCommonIssue({id, commonIssueId, problem, solution}: AddCommonIssuePayload) {
-    return this.db.commonIssue.upsert({
-      where: {
-        id: commonIssueId
-      },
-      update: {
-        softwareId: id,
-      },
-      create: {
-        problem: problem,
-        solution: solution,
-        softwareId: id
-      },
-    })
-  }
-
-  async addDepartment({id, departmentId}: AddOrRemoveDepartmentPayload) {
+  async addForeignKeys({id, departmentIds, techIds, commonIssueIds}: AddOrRemoveForeignKeysPayload) {
     return this.db.software.update({
       where: {
         id: id,
       },
       data: {
         department: {
-          connect: [{id: departmentId}],
+          connect: departmentIds.map(id => ({id})),
+        },
+        support: {
+          connect: techIds.map(id => ({id}))
+        },
+        commonIssues: {
+          connect: commonIssueIds.map(id => ({id}))
         }
+      },
+      include: {
+        commonIssues: true,
+        department: true,
+        support: true,
       }
     })    
   }
 
-  async removeDepartment({id, departmentId}: AddOrRemoveDepartmentPayload) {
+  async removeForeignKeys({id, departmentIds, techIds, commonIssueIds}: AddOrRemoveForeignKeysPayload) {
     return this.db.software.update({
       where: {
         id: id,
       },
       data: {
         department: {
-          disconnect: [{id: departmentId}],
-        }
-      }
-    })
-  }
-
-  async addSupport({id, techId} : AddOrRemoveSupportPayload) {
-    return this.db.software.update({
-      where: {
-        id: id,
-      },
-      data: {
+          disconnect: departmentIds.map(id => ({id}))
+        },
         support: {
-          connect: [{id: techId}],
+          disconnect: techIds.map(id => ({id}))
+        },
+        commonIssues: {
+          disconnect: commonIssueIds.map(id => ({id}))
         }
-      }
-    })    
-  }
-
-  async removeSupport({id, techId}: AddOrRemoveSupportPayload) {
-    return this.db.software.update({
-      where: {
-        id: id,
       },
-      data: {
-        support: {
-          disconnect: [{id: techId}],
-        }
+      include: {
+        commonIssues: true,
+        department: true,
+        support: true,
       }
     })
   }
@@ -132,6 +136,11 @@ export class SoftwareRepository {
     return this.db.software.delete({
       where: {
         id: id,
+      },
+      include: {
+        commonIssues: true,
+        department: true,
+        support: true,
       }
     })
   }

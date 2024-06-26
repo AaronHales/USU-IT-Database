@@ -4,7 +4,7 @@ export type CreateResourcePayload = {
   descption: string
   link: string|undefined,
   commonIssueId: number|undefined,
-  incidentId: [number],
+  incidentIds: [number],
 }
 
 export type UpdateResourcePayload = {
@@ -12,11 +12,12 @@ export type UpdateResourcePayload = {
   descption: string|undefined
   link: string|undefined,
   commonIssueId: number|undefined,
-  incidentId: [number],
+  incidentIds: [number],
 }
 
-export type DeleteResourcePayload = {
+export type AddOrRemoveForeignKeysPayload = {
   id: number,
+  incidentIds: [number],
 }
 
 export class ResourcesRepository {
@@ -34,38 +35,24 @@ export class ResourcesRepository {
   }
 
 
-  async createResource({descption, link, commonIssueId, incidentId}: CreateResourcePayload) {
-    let resource = await this.db.resource.create({
+  async createResource({descption, link, commonIssueId, incidentIds}: CreateResourcePayload) {
+    return this.db.resource.create({
       data: {
         description: descption,
         link: link,
         commonIssueId: commonIssueId,
-      }
-    });
-    if (incidentId.length > 0 ) {
-      incidentId.forEach(id => {
-        let incident = this.db.incident.update({
-          where: {
-            id: id,
-          },
-          data: {
-            resourceId: resource.id
-          }
-        })
-      });
-    }
-    return this.db.resource.findFirstOrThrow({
-      where: {
-        id: resource.id,
+        incidents: {
+          connect: incidentIds.map(id => ({id}))
+        }
       },
       include: {
-        incidents: true,
+        commonIssue: true,
       }
     })
   }
 
-  async updateResource({id, descption, link, commonIssueId, incidentId}: UpdateResourcePayload) {
-    let resource = await this.db.resource.update({
+  async updateResource({id, descption, link, commonIssueId, incidentIds}: UpdateResourcePayload) {
+    return this.db.resource.update({
       where: {
         id: id,
       },
@@ -73,34 +60,55 @@ export class ResourcesRepository {
         description: descption,
         link: link,
         commonIssueId: commonIssueId,
-      }
-    })
-    if (incidentId.length > 0) {
-      incidentId.forEach(id => {
-        let incident = this.db.incident.update({
-          where: {
-            id: id,
-          },
-          data: {
-            resourceId: resource.id
-          }
-        })
-      });
-    }
-    return this.db.resource.findFirstOrThrow({
-      where: {
-        id: resource.id,
+        incidents: {
+          connect: incidentIds.map(id => ({id}))
+        }
       },
       include: {
-        incidents: true,
+        commonIssue: true,
       }
     })
   }
 
-  async deleteResource({id}: DeleteResourcePayload) {
+  async addForeignKeys({id, incidentIds}: AddOrRemoveForeignKeysPayload) {
+    return this.db.resource.update({
+      where: {
+        id: id,
+      },
+      data: {
+        incidents: {
+          connect: incidentIds.map(id => ({id}))
+        }
+      },
+      include: {
+        commonIssue: true,
+      }
+    })
+  }
+
+  async removeForeignKeys({id, incidentIds}: AddOrRemoveForeignKeysPayload) {
+    return this.db.resource.update({
+      where: {
+        id: id,
+      },
+      data: {
+        incidents: {
+          disconnect: incidentIds.map(id => ({id}))
+        }
+      },
+      include: {
+        commonIssue: true,
+      }
+    })
+  }
+
+  async deleteResource(id: number) {
     return this.db.resource.delete({
       where: {
         id: id
+      },
+      include: {
+        commonIssue: true,
       }
     })
   }
@@ -110,6 +118,9 @@ export class ResourcesRepository {
       where: {
         id: id
       },
+      include: {
+        commonIssue: true,
+      }
     });
   }
 }
