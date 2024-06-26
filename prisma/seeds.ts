@@ -21,6 +21,92 @@ async function main() {
       password_hash: bcrypt.hashSync(process.env.ADMIN_PASSWORD!!),
     }
   })
+
+  await prisma.department.upsert({
+    where: {
+      id: 1,
+    },
+    create: {
+      name: "Information Technology",
+      abbreviation: "IT",
+      departmentCode: "DPINFT",
+      phoneNumbers: {
+        connectOrCreate: {
+          where: {
+            id: 1,
+            phoneNumber: "4357974357"
+          },
+          create: {
+            phoneNumber: "4357974357",
+          }
+        }
+      },
+      email: "servicedesk@usu.edu",
+      subDepartments: {
+        connectOrCreate: {
+          where: {
+            id: 2,
+            name: "Service Desk"
+          },
+          create: {
+            name: "IT Service Desk",
+            email: "servicedesk@usu.edu",
+            phoneNumbers: {
+              connectOrCreate: {
+                where: {
+                  id: 1,
+                  phoneNumber: "4357974357",
+                },
+                create: {
+                  phoneNumber: "4357974357",
+                }
+              }
+            },
+          }
+        }
+      }
+    },
+    update: {
+      name: "Information Technology",
+      abbreviation: "IT",
+      departmentCode: "DPINFT",
+      phoneNumbers: {
+        connectOrCreate: {
+          where: {
+            id: 1,
+            phoneNumber: "4357974357"
+          },
+          create: {
+            phoneNumber: "4357974357",
+          }
+        }
+      },
+      email: "servicedesk@usu.edu",
+      subDepartments: {
+        connectOrCreate: {
+          where: {
+            id: 2,
+            name: "Service Desk"
+          },
+          create: {
+            name: "IT Service Desk",
+            email: "servicedesk@usu.edu",
+            phoneNumbers: {
+              connectOrCreate: {
+                where: {
+                  id: 1,
+                  phoneNumber: "4357974357",
+                },
+                create: {
+                  phoneNumber: "4357974357",
+                }
+              }
+            },
+          }
+        }
+      }
+    }
+  })
   // TODO: put default data in the database
   console.log(process.env);
 }

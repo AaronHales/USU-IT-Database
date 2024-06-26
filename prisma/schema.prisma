@@ -29,60 +29,65 @@ model Department {
   name               String
   abbreviation       String?
   departmentCode     String?
-  extension          Int?
+  phoneNumbers       Extension[]
   email              String?
   subDepartments     Department[]     @relation("subdeparments")
   parentDepartment   Department?      @relation("subdeparments", fields: [parentDepartmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   parentDepartmentId Int?
   responsibilities   Responsibility[]
   techs              DesktopSupport[]
-  commonIssues       CommonIssue[]
-  software           Software[]
+  commonIssues       CommonIssue[]    @relation("departmentIssues")
+  software           Software[]       @relation("software-department")
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 }
 
+model Extension {
+  id          Int          @id @default(autoincrement())
+  phoneNumber String
+  department  Department[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
 model Responsibility {
-  id             Int        @id @default(autoincrement())
+  id             Int         @id @default(autoincrement())
   responsibility String
-  department     Department @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  departmentId   Int
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  department     Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  departmentId   Int?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 }
 
 model DesktopSupport {
-  id            Int          @id @default(autoincrement())
-  name          String
-  deskPhone     Int?
-  cellPhone     Int?
-  email         String?
-  commonIssue   CommonIssue? @relation("issues", fields: [commonIssueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  commonIssueId Int?
-  software      Software?    @relation(fields: [softwareId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  softwareId    Int?
-  department    Department   @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  departmentId  Int
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id          Int           @id @default(autoincrement())
+  name        String
+  deskPhone   String?
+  cellPhone   String?
+  email       String?
+  commonIssue CommonIssue[] @relation("issues")
+  software    Software[]
+  department  Department[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 model CommonIssue {
-  id           Int              @id @default(autoincrement())
-  problem      String?
-  helpers      DesktopSupport[] @relation("issues")
-  solution     String?
-  resources    Resource[]
-  department   Department       @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  departmentId Int
-  software     Software?        @relation(fields: [softwareId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  softwareId   Int?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  id          Int              @id @default(autoincrement())
+  problem     String?
+  helpers     DesktopSupport[] @relation("issues")
+  solution    String?
+  resources   Resource[]
+  departments Department[]     @relation("departmentIssues")
+  software    Software?        @relation(fields: [softwareId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  softwareId  Int?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 model Resource {
   id            Int          @id @default(autoincrement())
+  description   String
   incidents     Incident[]
   link          String?
   commonIssue   CommonIssue? @relation(fields: [commonIssueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -106,8 +111,7 @@ model Software {
   name         String
   support      DesktopSupport[]
   commonIssues CommonIssue[]
-  department   Department       @relation(fields: [departmentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  departmentId Int
+  department   Department[]     @relation("software-department")
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 }
