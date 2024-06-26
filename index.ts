@@ -85,7 +85,7 @@ app.use("/incidents", buildIncidentsController(incidentsRepository));
 app.use("/resources", buildResourcesController(resourcesRepository));
 app.use("/responsibilities", buildResponsibilitiesController(responsibilitiesRepository));
 app.use("/desktopSupport", buildDesktopSupportsController(desktopSupportsRepository));
-app.use("/departmets", buildDepartmentsController(departmentsRepository));
+app.use("/departments", buildDepartmentsController(departmentsRepository));
 app.use("/extensions", buildExtensionsController(extensionsRepository));
 
 
