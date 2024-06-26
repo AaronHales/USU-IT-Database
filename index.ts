@@ -27,6 +27,9 @@ import { ResourcesRepository } from "./server/repositories/resources_repository"
 import { buildResponsibilitiesController } from "./server/controllers/responsibilities_controller";
 import { ResponsibilitiesRepository } from "./server/repositories/responsibilities_repositiory";
 
+import { buildDesktopSupportsController } from "./server/controllers/desktopSupports_controller";
+import { DesktopSupportsRepository } from "./server/repositories/desktopSupports_repository";
+
 
 
 const db = new PrismaClient();
@@ -36,6 +39,7 @@ const commonIssuesRepository = CommonIssuesRepository.getInstance(db);
 const incidentsRepository = IncidentsRepository.getInstance(db);
 const resourcesRepository = ResourcesRepository.getInstance(db);
 const responsibilitiesRepository = ResponsibilitiesRepository.getInstance(db);
+const desktopSupportsRepository = DesktopSupportsRepository.getInstance(db);
 
 dotenv.config();
 
@@ -74,6 +78,7 @@ app.use("/commonIssues", buildCommonIssuesController(commonIssuesRepository));
 app.use("/incidents", buildIncidentsController(incidentsRepository));
 app.use("/resources", buildResourcesController(resourcesRepository));
 app.use("/responsibilities", buildResponsibilitiesController(responsibilitiesRepository));
+app.use("/desktopSupport", buildDesktopSupportsController(desktopSupportsRepository));
 
 
 app.listen(process.env.PORT || 3000, () => {

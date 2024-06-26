@@ -8,26 +8,26 @@ export const buildResponsibilitiesController = (responsibilitiesRepository: Resp
   const router = Router();
 
   router.post("/", async (req, res) => {
-    const responsibilitie = await responsibilitiesRepository.createResponsibility(req.body);
+    const responsibility = await responsibilitiesRepository.createResponsibility(req.body);
 
-    res.json({ responsibilitie: responsibilitie });
+    res.json({ responsibility: responsibility });
   });
 
   router.get("/:id", async (req, res) => {
-    const responsibilitie = await responsibilitiesRepository.getResponsibilityById(+req.params.id)
-    res.json({ responsibilitie: responsibilitie })
+    const responsibility = await responsibilitiesRepository.getResponsibilityById(+req.params.id)
+    res.json({ responsibility: responsibility })
   })
 
   router.put("/:id", authMiddleware, async (req, res) => {
     req.body.id = +req.params.id
-    const responsibilitie = await responsibilitiesRepository.updateResponsibility(req.body)
-    res.json({ responsibilitie: responsibilitie});
+    const responsibility = await responsibilitiesRepository.updateResponsibility(req.body)
+    res.json({ responsibility: responsibility});
   })
 
   router.delete("/:id", authMiddleware, async (req, res) => {
     req.body.id = +req.params.id
-    const responsibilitie = await responsibilitiesRepository.deleteResponsibility(req.body)
-    res.json({ responsibilitie: responsibilitie});
+    const responsibility = await responsibilitiesRepository.deleteResponsibility(req.body)
+    res.json({ responsibility: responsibility});
   })
 
 
