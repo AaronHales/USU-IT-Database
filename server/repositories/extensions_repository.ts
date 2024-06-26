@@ -2,14 +2,19 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 export type CreateExtensionPayload = {
-  phoneNumber: number,
-  departmentId: number|undefined,
+  phoneNumber: string,
+  departmentIds: [number],
 }
 
 export type UpdateExtensionPayload = {
   id: number,
-  phoneNumber: number,
-  departmentId: number|undefined
+  phoneNumber: string,
+  departmentIds: [number]
+}
+
+export type AddOrRemoveForeignKeysPayload = {
+  id: number,
+  departmentIds: [number],
 }
 
 export class ExtensionsRepository {
@@ -27,23 +32,53 @@ export class ExtensionsRepository {
   }
 
 
-  async createExtension({phoneNumber, departmentId}: CreateExtensionPayload) {
+  async createExtension({phoneNumber, departmentIds}: CreateExtensionPayload) {
     return this.db.extension.create({
       data: {
         phoneNumber: phoneNumber,
-        departmentId: departmentId
+        department: {
+          connect: departmentIds.map(id => ({id}))
+        }
       }
     });
   }
 
-  async updateExtension({id, phoneNumber, departmentId}: UpdateExtensionPayload) {
+  async updateExtension({id, phoneNumber, departmentIds}: UpdateExtensionPayload) {
     return this.db.extension.update({
       where: {
         id: id,
       },
       data: {
         phoneNumber: phoneNumber,
-        departmentId: departmentId,
+        department: {
+          connect: departmentIds.map(id => ({id}))
+        }
+      }
+    })
+  }
+
+  async addForeignKeys({id, departmentIds}: AddOrRemoveForeignKeysPayload) {
+    return this.db.extension.update({
+      where: {
+        id: id,
+      },
+      data: {
+        department: {
+          connect: departmentIds.map(id => ({id}))
+        }
+      }
+    })
+  }
+
+  async removeForeignKeys({id, departmentIds}: AddOrRemoveForeignKeysPayload) {
+    return this.db.extension.update({
+      where: {
+        id: id,
+      },
+      data: {
+        department: {
+          disconnect: departmentIds.map(id => ({id}))
+        }
       }
     })
   }

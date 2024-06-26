@@ -24,6 +24,18 @@ export const buildExtensionsController = (extensionsRepository: ExtensionsReposi
     res.json({ extension: extension})
   })
 
+  router.patch("/:id", authMiddleware, async (req, res) => {
+    req.body.id = +req.params.id
+    let extension
+    if (req.body.removeForeignKeys) {
+      extension = await extensionsRepository.removeForeignKeys(req.body)
+    }
+    else if (req.body.addForeignKeys) {
+      extension = await extensionsRepository.addForeignKeys(req.body)
+    }
+    res.json({ extension: extension})
+  })
+
   router.delete("/:id", authMiddleware, async (req, res) => {
     const extension = await extensionsRepository.deleteExtension(+req.params.id)
     res.json({ extension: extension});

@@ -2,8 +2,8 @@ import { PrismaClient } from "@prisma/client";
 
 export type CreateDesktopSupportPayload = {
   name: string,
-  deskPhone: number|undefined,
-  cellPhone: number|undefined,
+  deskPhone: string|undefined,
+  cellPhone: string|undefined,
   email: string|undefined,
   commonIssueIds: [number], 
   softwareIds: [number],
@@ -13,8 +13,8 @@ export type CreateDesktopSupportPayload = {
 export type UpdateDesktopSupportPayload = {
   id: number,
   name: string,
-  deskPhone: number|undefined,
-  cellPhone: number|undefined,
+  deskPhone: string|undefined,
+  cellPhone: string|undefined,
   email: string|undefined,
   commonIssueIds: [number], 
   softwareIds: [number],
